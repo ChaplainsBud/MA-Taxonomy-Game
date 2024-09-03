@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const winMessage = document.getElementById('win-message');
     const restartButton = document.getElementById('restart-button');
     let correctPlacements = 0; // Track the number of correct placements
+    let draggedElement = null; // To store the dragged element for touch events
 
     // Store original text content of categories
     const originalCategoryTexts = {};
@@ -14,15 +15,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ensure the win message is hidden at the start
     winMessage.classList.add('hidden');
 
-    // Initialize draggable events for animals
+    // Initialize draggable events for animals (support for mouse and touch events)
     animals.forEach(animal => {
+        // Mouse events
         animal.addEventListener('dragstart', dragStart);
+        // Touch events
+        animal.addEventListener('touchstart', touchStart);
     });
 
-    // Initialize drag and drop events for categories
+    // Initialize drag and drop events for categories (support for mouse and touch events)
     categories.forEach(category => {
+        // Mouse events
         category.addEventListener('dragover', dragOver);
         category.addEventListener('drop', drop);
+        // Touch events
+        category.addEventListener('touchmove', touchMove);
+        category.addEventListener('touchend', touchEnd);
     });
 
     // Event listener for restart button
@@ -108,5 +116,45 @@ document.addEventListener('DOMContentLoaded', () => {
         restartButton.classList.remove('visible');
 
         console.log('Game reset complete.');
+    }
+
+    // Touch event handlers
+    function touchStart(event) {
+        event.preventDefault();
+        draggedElement = event.target; // Set the currently dragged element
+    }
+
+    function touchMove(event) {
+        event.preventDefault();
+        const touchLocation = event.targetTouches[0];
+        draggedElement.style.position = "absolute";
+        draggedElement.style.left = `${touchLocation.pageX - (draggedElement.offsetWidth / 2)}px`;
+        draggedElement.style.top = `${touchLocation.pageY - (draggedElement.offsetHeight / 2)}px`;
+    }
+
+    function touchEnd(event) {
+        event.preventDefault();
+        const targetCategory = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+        const animalId = draggedElement.id;
+
+        if (targetCategory && targetCategory.classList.contains('category') && targetCategory.id === getAnimalCategory(animalId)) {
+            if (!targetCategory.contains(draggedElement)) {
+                targetCategory.textContent = ''; // Remove the category name text
+                targetCategory.appendChild(draggedElement);
+                correctPlacements += 1; // Increment correct placements only if the animal is not already in the category
+
+                // Apply styles to make the image fill the category box
+                draggedElement.style.width = '100%';
+                draggedElement.style.height = '100%';
+                draggedElement.style.objectFit = 'cover';
+                draggedElement.style.position = 'relative'; // Reset position to default
+
+                checkWinCondition(); // Check if all animals are placed correctly
+            }
+        } else {
+            alert('Try again!');
+            draggedElement.style.position = 'relative'; // Reset position to default
+        }
+        draggedElement = null; // Reset dragged element
     }
 });
