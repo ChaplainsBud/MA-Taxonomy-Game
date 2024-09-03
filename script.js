@@ -20,7 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mouse events
         animal.addEventListener('dragstart', dragStart);
         // Touch events
-        animal.addEventListener('touchstart', touchStart);
+        animal.addEventListener('touchstart', touchStart, { passive: false });
+        animal.addEventListener('touchmove', touchMove, { passive: false });
+        animal.addEventListener('touchend', touchEnd, { passive: false });
     });
 
     // Initialize drag and drop events for categories (support for mouse and touch events)
@@ -28,9 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mouse events
         category.addEventListener('dragover', dragOver);
         category.addEventListener('drop', drop);
-        // Touch events
-        category.addEventListener('touchmove', touchMove);
-        category.addEventListener('touchend', touchEnd);
     });
 
     // Event listener for restart button
@@ -102,6 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
             animal.style.width = '';
             animal.style.height = '';
             animal.style.objectFit = '';
+            animal.style.position = 'relative'; // Reset position
+            animal.style.left = ''; // Reset position
+            animal.style.top = ''; // Reset position
         });
 
         // Clear any elements inside category boxes and restore original text
@@ -120,27 +122,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Touch event handlers
     function touchStart(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default touch behavior (like scrolling)
         draggedElement = event.target; // Set the currently dragged element
+        draggedElement.style.position = "absolute"; // Make it draggable
     }
 
     function touchMove(event) {
         event.preventDefault();
-        const touchLocation = event.targetTouches[0];
-        draggedElement.style.position = "absolute";
-        draggedElement.style.left = `${touchLocation.pageX - (draggedElement.offsetWidth / 2)}px`;
-        draggedElement.style.top = `${touchLocation.pageY - (draggedElement.offsetHeight / 2)}px`;
+        if (draggedElement) {
+            const touchLocation = event.targetTouches[0];
+            draggedElement.style.left = `${touchLocation.pageX - (draggedElement.offsetWidth / 2)}px`;
+            draggedElement.style.top = `${touchLocation.pageY - (draggedElement.offsetHeight / 2)}px`;
+        }
     }
 
     function touchEnd(event) {
         event.preventDefault();
-        const targetCategory = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+        const touch = event.changedTouches[0];
+        const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
         const animalId = draggedElement.id;
 
-        if (targetCategory && targetCategory.classList.contains('category') && targetCategory.id === getAnimalCategory(animalId)) {
-            if (!targetCategory.contains(draggedElement)) {
-                targetCategory.textContent = ''; // Remove the category name text
-                targetCategory.appendChild(draggedElement);
+        if (dropTarget && dropTarget.classList.contains('category') && dropTarget.id === getAnimalCategory(animalId)) {
+            if (!dropTarget.contains(draggedElement)) {
+                dropTarget.textContent = ''; // Remove the category name text
+                dropTarget.appendChild(draggedElement);
                 correctPlacements += 1; // Increment correct placements only if the animal is not already in the category
 
                 // Apply styles to make the image fill the category box
@@ -148,12 +153,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 draggedElement.style.height = '100%';
                 draggedElement.style.objectFit = 'cover';
                 draggedElement.style.position = 'relative'; // Reset position to default
+                draggedElement.style.left = ''; // Reset position to default
+                draggedElement.style.top = ''; // Reset position to default
 
                 checkWinCondition(); // Check if all animals are placed correctly
             }
         } else {
             alert('Try again!');
-            draggedElement.style.position = 'relative'; // Reset position to default
+            // Reset position if not placed correctly
+            draggedElement.style.position = 'relative'; 
+            draggedElement.style.left = ''; 
+            draggedElement.style.top = ''; 
         }
         draggedElement = null; // Reset dragged element
     }
