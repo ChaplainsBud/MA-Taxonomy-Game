@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const animals = document.querySelectorAll('.animal');
     const categories = document.querySelectorAll('.category');
+    const animalSlots = document.querySelectorAll('.animal-slot');
     const winMessage = document.getElementById('win-message');
     const restartButton = document.getElementById('restart-button');
     let correctPlacements = 0; // Track the number of correct placements
@@ -59,7 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
             animalElement.style.objectFit = 'cover';
 
             checkWinCondition(); // Check if all animals are placed correctly
-        } else if (event.target.id !== getAnimalCategory(animalId)) {
+        } else if (event.target.classList.contains('animal-slot')) {
+            // If the animal is dropped back to an empty slot, append it back to the slot
+            event.target.appendChild(animalElement);
+        } else {
             alert('Try again!');
         }
     }
@@ -93,10 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
         correctPlacements = 0; // Reset the number of correct placements
 
         // Reset animals to their original positions
-        const animalContainer = document.querySelector('.animals');
         animals.forEach(animal => {
-            animalContainer.appendChild(animal);
-            
+            const slot = document.querySelector(`.animal-slot:empty`) || animal.parentElement;
+            slot.appendChild(animal);
+
             // Reset image styles to default
             animal.style.width = '';
             animal.style.height = '';
@@ -158,6 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 checkWinCondition(); // Check if all animals are placed correctly
             }
+        } else if (dropTarget && dropTarget.classList.contains('animal-slot')) {
+            dropTarget.appendChild(draggedElement);
         } else {
             alert('Try again!');
             // Reset position if not placed correctly

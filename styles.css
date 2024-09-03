@@ -32,6 +32,17 @@ body {
     align-items: center;
 }
 
+/* New CSS for animal slots */
+.animal-slot {
+    width: 150px; /* Match category width */
+    height: 150px; /* Match category height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    border: 2px dashed transparent; /* Optional: add a border to visualize slots */
+}
+
 .animal {
     width: 150px;
     margin: 10px;
