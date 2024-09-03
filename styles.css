@@ -1,11 +1,29 @@
 body {
     font-family: Arial, sans-serif;
+    background-image: url('forest-background.jpg'); /* Make sure to have this image in your project directory */
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    padding: 0;
+}
+
+.game-header {
+    text-align: center;
+    font-size: 2em;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px 0;
+    margin: 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
 }
 
 .game-container {
     display: flex;
     justify-content: space-around;
-    margin-top: 50px;
+    margin-top: 150px; /* Added margin to push the game down from the fixed header */
 }
 
 .animals, .categories {
@@ -29,4 +47,5 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
+    background-color: rgba(255, 255, 255, 0.8); /* Added background color to make categories readable over the forest background */
 }
