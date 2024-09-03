@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.game-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 50px;
+}
+
+.animals, .categories {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.animal {
+    width: 100px;
+    margin: 10px;
+    cursor: grab;
+}
+
+.category {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed #ccc;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
